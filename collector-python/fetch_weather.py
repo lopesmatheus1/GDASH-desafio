@@ -34,7 +34,9 @@ def fetch_weather():
         'humidity': current.get('relative_humidity_2m'),
         'wind_speed': current.get('wind_speed_10m'),
         'weather_condition': translate_weather_code(current.get('weather_code')),
-        'precipitation_probability': current.get('precipitation_probability')
+        'weather_code': current.get('weather_code'),
+        'precipitation_probability': current.get('precipitation_probability'),
+
     }
 
     print('Dados coletados:', weather)
