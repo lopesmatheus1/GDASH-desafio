@@ -1,7 +1,7 @@
-##Função para traduzir códigos de clima em descrições em português
+##Funçao para traduzir códigos de clima em descrições em português
 def translate_weather_code(code):
     weather_conditions = {
-        0: "Céu limpo",
+        0: "Ceu limpo",
         1: "Principalmente limpo",
         2: "Parcialmente nublado",
         3: "Nublado",
@@ -20,7 +20,7 @@ def translate_weather_code(code):
         71: "Queda de neve leve",
         73: "Queda de neve moderada",
         75: "Queda de neve forte",
-        77: "Grãos de neve",
+        77: "Graos de neve",
         80: "Aguaceiros de chuva leves",
         81: "Aguaceiros de chuva moderados",
         82: "Aguaceiros de chuva violentos",
