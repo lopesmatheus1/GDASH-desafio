@@ -12,3 +12,8 @@ venv/
 # IDE
 .vscode/
 .idea/
+
+#nest-api
+nest-api/.env
+nest-api/node_modules/
+node_modules/
