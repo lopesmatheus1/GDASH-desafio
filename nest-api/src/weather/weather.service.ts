@@ -12,18 +12,31 @@ export class WeatherService {
   ) {}
 
   async create(createWeatherDto: CreateWeatherDto) {
-    return this.weatherModel.create(createWeatherDto) // ✔ correto
+    return this.weatherModel.create(createWeatherDto)
   }
 
-  findAll() {
-    return this.weatherModel.find().exec()
+  async findAll(month?: number, year?: number) {
+    const query: {
+      createdAt?: { $gte: Date; $lt: Date }
+    } = {}
+
+    if (month && year) {
+      query.createdAt = {
+        $gte: new Date(year, month - 1, 1),
+        $lt: new Date(year, month, 1),
+      }
+    }
+
+    return await this.weatherModel.find(query).exec()
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} weather`
-  }
+  async findByDateRange(startDate: Date, endDate: Date) {
+    const query: {
+      createdAt?: { $gte: Date; $lt: Date }
+    } = {
+      createdAt: { $gte: startDate, $lt: endDate },
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} weather`
+    return await this.weatherModel.find(query).exec()
   }
 }

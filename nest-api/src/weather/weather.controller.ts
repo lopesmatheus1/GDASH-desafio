@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Body, Param, Delete, Res } from '@nestjs/common'
+import { Controller, Get, Post, Body, Res, Query } from '@nestjs/common'
 import { WeatherService } from './weather.service'
 import { CreateWeatherDto } from './dto/create-weather.dto'
 import { Public } from 'src/auth/decorator/public.decorator'
 import { ExportService } from 'src/export/export.service'
 import type { Response } from 'express'
 
-@Controller('weather')
+@Controller('weather/logs')
 export class WeatherController {
   constructor(
     private weatherService: WeatherService,
@@ -19,8 +19,10 @@ export class WeatherController {
   }
 
   @Get()
-  findAll() {
-    return this.weatherService.findAll()
+  async findAll(@Query('month') month: number, @Query('year') year: number) {
+    const YEAR = year ?? new Date().getFullYear()
+
+    return this.weatherService.findAll(month, YEAR)
   }
 
   @Get('export.csv')
@@ -45,15 +47,5 @@ export class WeatherController {
     )
     res.setHeader('Content-Disposition', 'attachment; filename=weather.xlsx')
     res.send(buffer)
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.weatherService.findOne(+id)
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.weatherService.remove(+id)
   }
 }
