@@ -9,24 +9,16 @@ export class AiService {
   async generateTendencyInsight(data: WeatherLogDocument[]): Promise<string> {
     return this.geminiService.generateContent(
       `
-    Atue como um especialista em análise de dados meteorológicos.
-    OBJETIVO:
-    Analise a série temporal de dados dos ultimos 7 dias fornecido abaixo e identifique a tendência (o padrão de mudança do início para o fim do período).
+    Atue como um meteorologista objetivo.
+    Analise os dados abaixo e escreva um ÚNICO parágrafo resumindo o comportamento do clima no período.
 
-    REGRAS DE RESPOSTA:
-    1. Responda APENAS em Português do Brasil.
-    2. Seja direto e breve (estilo notificação de aplicativo).
-    3. Use termos: "Em alta", "Em queda", "Estável" ou "Oscilando".
-    4. Ignore pequenas flutuações irrelevantes (ruído nos dados).
-
-    FORMATO OBRIGATÓRIO (Responda apenas com a lista abaixo):
-    -  Temperatura: [Tendência]
-    -  Umidade: [Tendência]
-    -  Vento: [Tendência]
-    -  Chuva: [Probabilidade aumentando/diminuindo/nula]
-    -  Resumo Geral: [Uma frase curta de conclusão, ex: "O tempo está firmando e esquentando."]
-
-    DADOS DE ENTRADA (Ordem cronológica):
+    DIRETRIZES DE ESTILO:
+    - Comece a frase contextualizando o período (ex: "Nos últimos registros...", "Recentemente...").
+    - NÃO use listas ou tópicos. Escreva um texto corrido.
+    - Use conectivos para relacionar as variáveis (ex: "enquanto a temperatura subiu, a umidade caiu...").
+    - Seja direto: Fale o que aconteceu com Temperatura, Umidade e Vento.
+    - Termine com uma conclusão sobre a sensação térmica ou chance de chuva.
+    DADOS:
     ${JSON.stringify(data)}
     `
     )
