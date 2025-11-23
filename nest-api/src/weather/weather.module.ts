@@ -14,5 +14,6 @@ import { ExportModule } from 'src/export/export.module'
   ],
   controllers: [WeatherController],
   providers: [WeatherService],
+  exports: [WeatherService],
 })
 export class WeatherModule {}
