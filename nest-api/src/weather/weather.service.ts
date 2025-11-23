@@ -16,7 +16,7 @@ export class WeatherService {
   }
 
   findAll() {
-    return `This action returns all weather`
+    return this.weatherModel.find().exec()
   }
 
   findOne(id: number) {
