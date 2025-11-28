@@ -8,7 +8,7 @@ import { UserModule } from './user/user.module'
 import { WeatherModule } from './weather/weather.module'
 import { ExportModule } from './export/export.module'
 import { InsightsModule } from './insights/insights.module'
-import { AiModule } from './ai/ai.module';
+import { AiModule } from './ai/ai.module'
 
 @Module({
   imports: [
