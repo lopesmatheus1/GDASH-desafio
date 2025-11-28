@@ -9,6 +9,12 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
   mongo:
     image: mongo:8
@@ -23,6 +29,17 @@ services:
   collector-python:
     build: ./collector-python
     container_name: collector-python
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  queue-worker-go:
+    build: ./queue-worker-go
+    container_name: queue-worker-go
     restart: always
     depends_on:
       - rabbitmq
