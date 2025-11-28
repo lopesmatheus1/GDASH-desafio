@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
+	"net/http"
+	"os"
+	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -11,28 +14,53 @@ import (
 type WeatherData struct {
 	Temperature              float64 `json:"temperature"`
 	Humidity                 float64 `json:"humidity"`
-	WindSpeed                float64 `json:"wind_speed"`
-	WeatherCondition         string  `json:"weather_condition"`
-	PrecipitationProbability float64 `json:"precipitation_probability"`
-	WeatherCode              int     `json:"weather_code"`
+	WindSpeed                float64 `json:"windSpeed"`
+	WeatherCondition         string  `json:"weatherCondition"`
+	PrecipitationProbability float64 `json:"precipitationProbability"`
+	WeatherCode              int     `json:"weatherCode"`
 }
 
 func main() {
-	// Conecta ao RabbitMQ
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
-	if err != nil {
-		log.Fatalf("Erro ao conectar ao RabbitMQ: %s", err)
-	}
+	apiURL := getEnv("API_URL", "http://host.docker.internal:8080/weather/logs")
+	rabbitURL := getEnv("RABBIT_URL", "amqp://guest:guest@rabbitmq:5672/")
+
+	conn := connectRabbit(rabbitURL)
 	defer conn.Close()
 
 	ch, err := conn.Channel()
-	if err != nil {
-		log.Fatalf("Erro ao abrir canal: %s", err)
-	}
+	failOnError(err, "Erro ao abrir canal")
 	defer ch.Close()
 
-	// Garante que a fila existe
-	_, err = ch.QueueDeclare(
+	declareQueue(ch)
+	consumeMessages(ch, apiURL)
+}
+
+
+func getEnv(key, fallback string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return fallback
+}
+
+func connectRabbit(url string) *amqp.Connection {
+	var conn *amqp.Connection
+	var err error
+
+	for {
+		conn, err = amqp.Dial(url)
+		if err == nil {
+			log.Println("[RabbitMQ] Conectado com sucesso!")
+			return conn
+		}
+
+		log.Println("[RabbitMQ] Falha ao conectar, tentando novamente em 3s...", err)
+		time.Sleep(3 * time.Second)
+	}
+}
+
+func declareQueue(ch *amqp.Channel) {
+	_, err := ch.QueueDeclare(
 		"weather_queue",
 		true,
 		false,
@@ -40,11 +68,10 @@ func main() {
 		false,
 		nil,
 	)
-	if err != nil {
-		log.Fatalf("Erro ao declarar fila: %s", err)
-	}
+	failOnError(err, "Erro ao declarar fila")
+}
 
-	// Configura consumo
+func consumeMessages(ch *amqp.Channel, apiURL string) {
 	msgs, err := ch.Consume(
 		"weather_queue",
 		"",
@@ -54,37 +81,64 @@ func main() {
 		false,
 		nil,
 	)
+	failOnError(err, "Erro ao registrar consumidor")
 
-	if err != nil {
-		log.Fatalf("Erro ao registrar consumidor: %s", err)
+	log.Println("[Worker] Aguardando mensagens...")
+
+	for msg := range msgs {
+		processMessage(msg, apiURL)
+	}
+}
+
+func processMessage(msg amqp.Delivery, apiURL string) {
+    var data WeatherData
+
+    if err := json.Unmarshal(msg.Body, &data); err != nil {
+        log.Println("[Worker] JSON inválido:", err)
+        msg.Nack(false, false) 
+        return
+    }
+
+    log.Println("[Worker] Mensagem recebida. Enviando para API...")
+
+    if sendToAPI(apiURL, data) {
+        msg.Ack(false)
+    } else {
+        log.Println("[Worker] Falha ao enviar. Tentando novamente em 5s...")
+        time.Sleep(5 * time.Second) 
+        
+        msg.Nack(false, true) 
+    }
+}
+
+
+func sendToAPI(url string, data WeatherData) bool {
+	jsonBody, _ := json.Marshal(data)
+
+	client := http.Client{
+		Timeout: 5 * time.Second,
 	}
 
-	fmt.Println("Worker em Go aguardando mensagens")
+	resp, err := client.Post(url, "application/json", bytes.NewBuffer(jsonBody))
+	if err != nil {
+		log.Println("[API] Erro ao chamar API:", err)
+		return false
+	}
+	defer resp.Body.Close()
 
-	forever := make(chan bool)
+	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+		log.Println("[API] Dados enviados com sucesso!")
+		return true
+	}
 
-	go func() {
-		for msg := range msgs {
-			var data WeatherData
+	log.Printf("[API] Resposta %d recebida da API\n", resp.StatusCode)
+	return false
+}
 
-			if err := json.Unmarshal(msg.Body, &data); err != nil {
-				log.Println("Erro ao converter JSON:", err)
-				msg.Nack(false, false)
-				continue
-			}
+/* ---------------------------------- ERROS -------------------------------------- */
 
-			fmt.Println("Mensagem recebida:")
-			fmt.Printf("Temperatura: %.2f°C\n", data.Temperature)
-			fmt.Printf("Umidade: %.0f%%\n", data.Humidity)
-			fmt.Printf("Vento: %.2f km/h\n", data.WindSpeed)
-			fmt.Printf("Condição (code): %d\n", data.WeatherCode)
-			fmt.Printf("Condição: %s\n", data.WeatherCondition)
-			fmt.Printf("Probabilidade de chuva: %.0f%%\n", data.PrecipitationProbability)
-			fmt.Println("")
-
-			msg.Ack(false)
-		}
-	}()
-
-	<-forever
+func failOnError(err error, msg string) {
+	if err != nil {
+		log.Fatalf("%s: %s", msg, err)
+	}
 }
