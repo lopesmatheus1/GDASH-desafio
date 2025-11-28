@@ -32,10 +32,10 @@ def fetch_weather():
     weather = {
         'temperature': current.get('temperature_2m'),
         'humidity': current.get('relative_humidity_2m'),
-        'wind_speed': current.get('wind_speed_10m'),
-        'weather_condition': translate_weather_code(current.get('weather_code')),
-        'weather_code': current.get('weather_code'),
-        'precipitation_probability': current.get('precipitation_probability'),
+        'windSpeed': current.get('wind_speed_10m'),
+        'weatherCondition': translate_weather_code(current.get('weather_code')),
+        'weatherCode': current.get('weather_code'),
+        'precipitationProbability': current.get('precipitation_probability'),
 
     }
 
