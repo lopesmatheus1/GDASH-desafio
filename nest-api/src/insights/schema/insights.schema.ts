@@ -16,6 +16,12 @@ export class Insight {
 
   @Prop({ required: true })
   summary: string
+
+  @Prop({ required: false })
+  score: number
+
+  createdAt: Date
+  updatedAt: Date
 }
 
 export const InsightSchema = SchemaFactory.createForClass(Insight)

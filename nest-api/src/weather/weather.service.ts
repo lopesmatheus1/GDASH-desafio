@@ -39,4 +39,32 @@ export class WeatherService {
 
     return await this.weatherModel.find(query).exec()
   }
+
+  async findPaginatedWeatherLogs(page: number, limit: number) {
+    const pageNumber = Math.max(1, page)
+    const skip = (pageNumber - 1) * limit
+
+    const [total, weatherLogs] = await Promise.all([
+      this.weatherModel.countDocuments().exec(),
+      this.weatherModel
+        .find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec(),
+    ])
+
+    const lastPage = Math.ceil(total / limit)
+
+    return {
+      data: weatherLogs,
+      meta: {
+        total,
+        page: pageNumber,
+        lastPage,
+        hasNextPage: pageNumber < lastPage,
+        hasPreviousPage: pageNumber > 1,
+      },
+    }
+  }
 }

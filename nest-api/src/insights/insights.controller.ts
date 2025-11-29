@@ -1,26 +1,27 @@
 import { Controller, Get } from '@nestjs/common'
 import { InsightsService } from './insights.service'
-import { WeatherService } from 'src/weather/weather.service'
 
 @Controller('weather/insights')
 export class InsightsController {
-  constructor(
-    private readonly insightsService: InsightsService,
-    private readonly weatherService: WeatherService
-  ) {}
+  constructor(private readonly insightsService: InsightsService) {}
 
   @Get('tendency')
-  async getTendency() {
-    //Pegar os dados dos ultimos 3 dias
-    const start = new Date()
-    const end = new Date()
-    start.setDate(end.getDate() - 3)
+  async getTendencyInsight() {
+    const tendency = await this.insightsService.getTendencyInsight()
 
-    const logs = await this.weatherService.findByDateRange(start, end)
-
-    const tendency = await this.insightsService.generateTendencyInsight(logs)
-
-    await this.insightsService.saveTendencyInsight(tendency)
     return { tendency }
+  }
+
+  @Get('warning')
+  async getWarningsInsight() {
+    const warnings = await this.insightsService.getWarningsInsight()
+    return { warnings }
+  }
+
+  @Get('day-classification')
+  async getDayClassificationInsight() {
+    const classification =
+      await this.insightsService.getDayClassificationInsight()
+    return classification
   }
 }

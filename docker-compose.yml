@@ -25,6 +25,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: root
     ports:
       - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
 
   collector-python:
     build: ./collector-python
