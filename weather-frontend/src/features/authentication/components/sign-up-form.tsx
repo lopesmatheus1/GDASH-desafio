@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Cloudy, EyeIcon, LockIcon, MailIcon, UserIcon } from 'lucide-react'
+import { Cloudy, LockIcon, MailIcon, UserIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
@@ -21,6 +21,7 @@ import {
 import { Input } from '@/components/ui/input'
 
 import { type SignUpSchema, signUpSchema } from '../schemas/sign-up'
+import PasswordInput from './password-input'
 
 const SignUpForm = () => {
   const signUpForm = useForm<SignUpSchema>({
@@ -53,6 +54,7 @@ const SignUpForm = () => {
             onSubmit={signUpForm.handleSubmit(onSignUpSubmit)}
             className="space-y-4"
           >
+            {/* USERNAME */}
             <FormField
               control={signUpForm.control}
               name="username"
@@ -69,6 +71,7 @@ const SignUpForm = () => {
                 </FormItem>
               )}
             />
+            {/* EMAIL */}
             <FormField
               control={signUpForm.control}
               name="email"
@@ -85,6 +88,7 @@ const SignUpForm = () => {
                 </FormItem>
               )}
             />
+            {/* PASSWORD */}
             <FormField
               control={signUpForm.control}
               name="password"
@@ -95,27 +99,14 @@ const SignUpForm = () => {
                     Senha
                   </FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <Input
-                        type="password"
-                        placeholder="Digite sua senha"
-                        {...field}
-                      />
-
-                      <Button
-                        variant="ghost"
-                        className="text-muted-foreground absolute right-0 bottom-0"
-                        type="button"
-                      >
-                        <EyeIcon />
-                      </Button>
-                    </div>
+                    <PasswordInput placeholder="Digite sua senha" {...field} />
                   </FormControl>
 
                   <FormMessage />
                 </FormItem>
               )}
             />
+            {/* PASSWORD CONFIRMATION */}
             <FormField
               control={signUpForm.control}
               name="passwordConfirmation"
@@ -126,21 +117,10 @@ const SignUpForm = () => {
                     Senha
                   </FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <Input
-                        type="password"
-                        placeholder="Digite sua senha"
-                        {...field}
-                      />
-
-                      <Button
-                        variant="ghost"
-                        className="text-muted-foreground absolute right-0 bottom-0"
-                        type="button"
-                      >
-                        <EyeIcon />
-                      </Button>
-                    </div>
+                    <PasswordInput
+                      placeholder="Confirme sua senha"
+                      {...field}
+                    />
                   </FormControl>
 
                   <FormMessage />

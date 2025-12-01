@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Cloudy, EyeIcon, LockIcon, MailIcon } from 'lucide-react'
+import { Cloudy, LockIcon, MailIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
@@ -21,6 +21,7 @@ import {
 import { Input } from '@/components/ui/input'
 
 import { type SignInSchema, signInSchema } from '../schemas/sign-in'
+import PasswordInput from './password-input'
 
 const SignInForm = () => {
   const signInForm = useForm<SignInSchema>({
@@ -52,6 +53,7 @@ const SignInForm = () => {
             onSubmit={signInForm.handleSubmit(onSignInSubmit)}
             className="space-y-4"
           >
+            {/* EMAIL */}
             <FormField
               control={signInForm.control}
               name="email"
@@ -68,6 +70,7 @@ const SignInForm = () => {
                 </FormItem>
               )}
             />
+            {/* PASSWORD */}
             <FormField
               control={signInForm.control}
               name="password"
@@ -78,21 +81,7 @@ const SignInForm = () => {
                     Senha
                   </FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <Input
-                        type="password"
-                        placeholder="Digite sua senha"
-                        {...field}
-                      />
-
-                      <Button
-                        variant="ghost"
-                        className="text-muted-foreground absolute right-0 bottom-0"
-                        type="button"
-                      >
-                        <EyeIcon />
-                      </Button>
-                    </div>
+                    <PasswordInput placeholder="Digite sua senha" {...field} />
                   </FormControl>
 
                   <FormMessage />
