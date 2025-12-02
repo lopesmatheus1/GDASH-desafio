@@ -21,7 +21,7 @@ type WeatherData struct {
 }
 
 func main() {
-	apiURL := getEnv("API_URL", "http://host.docker.internal:8080/weather/logs")
+	apiURL := getEnv("API_URL", "http://host.docker.internal:3000/weather/logs")
 	rabbitURL := getEnv("RABBIT_URL", "amqp://guest:guest@rabbitmq:5672/")
 
 	conn := connectRabbit(rabbitURL)
