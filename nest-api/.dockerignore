@@ -1,0 +1,4 @@
+.git
+Dockerfile
+npm-debug.log
+.env

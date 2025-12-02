@@ -50,5 +50,27 @@ services:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
 
+  nest-api:
+    build:
+      context: ./nest-api
+      dockerfile: Dockerfile
+    container_name: nest-api
+    restart: always
+    depends_on:
+      mongo:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      # MONGO
+      MONGO_URI: mongodb://root:root@mongo:27017/admin?authSource=admin
+
+      # RABBITMQ
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      
 volumes:
   mongo_data:
