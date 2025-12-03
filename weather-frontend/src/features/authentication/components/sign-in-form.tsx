@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Cloudy, LoaderIcon, LockIcon, MailIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { Navigate } from 'react-router'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -26,11 +25,8 @@ import { type SignInSchema, signInSchema } from '../schemas/sign-in'
 import PasswordInput from './password-input'
 
 const SignInForm = () => {
-  const { user, signin, signInPending, isInitializing } = useAuthContext()
-
+  const { signin, signInPending, isInitializing } = useAuthContext()
   if (isInitializing) return null
-
-  if (user) return Navigate({ to: '/dashboard', replace: true })
 
   const signInForm = useForm<SignInSchema>({
     resolver: zodResolver(signInSchema),

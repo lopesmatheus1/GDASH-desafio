@@ -12,7 +12,7 @@ import {
   removeAccessToken,
   setAccessToken,
 } from '@/helpers/tokens'
-import { protectedApi, publicApi } from '@/lib/axios'
+import { UserService } from '@/services/user'
 
 export const AuthContext = createContext({
   user: null as User | null,
@@ -39,8 +39,8 @@ export const AuthContextProvider = ({
       try {
         const token = getAccessToken()
         if (token) {
-          const user = await protectedApi.get('/user/me')
-          setUser(user.data)
+          const user = await UserService.fetchUserLoggedIn()
+          setUser(user)
           navigate('/dashboard')
         }
         if (!token) {
@@ -63,19 +63,16 @@ export const AuthContextProvider = ({
   const signInMutation = useMutation({
     mutationKey: ['signIn'],
     mutationFn: async (data: SignInSchema) => {
-      const response = await publicApi.post('/auth/signin', {
-        email: data.email,
-        password: data.password,
-      })
-      return response.data
+      const response = await UserService.login(data.email, data.password)
+      return response
     },
   })
 
   const signIn = (data: SignInSchema) => {
     signInMutation.mutate(data, {
-      onSuccess(logedInUser) {
-        setUser(logedInUser)
-        setAccessToken(logedInUser.accessToken)
+      onSuccess(response) {
+        setUser(response.user)
+        setAccessToken(response.accessToken)
         toast.success('Login realizado com sucesso!')
         navigate('/dashboard')
       },
@@ -90,12 +87,12 @@ export const AuthContextProvider = ({
   const signUpMutation = useMutation({
     mutationKey: ['signUp'],
     mutationFn: async (data: SignUpSchema) => {
-      const response = await publicApi.post('/auth/signup', {
-        name: data.name,
-        email: data.email,
-        password: data.password,
-      })
-      return response.data
+      const response = await UserService.register(
+        data.name,
+        data.email,
+        data.password
+      )
+      return response
     },
   })
 
