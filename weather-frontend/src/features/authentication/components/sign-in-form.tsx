@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Cloudy, LockIcon, MailIcon } from 'lucide-react'
+import { Cloudy, LoaderIcon, LockIcon, MailIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
+import { Navigate } from 'react-router'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -19,11 +20,18 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useAuthContext } from '@/context/authContext'
 
 import { type SignInSchema, signInSchema } from '../schemas/sign-in'
 import PasswordInput from './password-input'
 
 const SignInForm = () => {
+  const { user, signin, signInPending, isInitializing } = useAuthContext()
+
+  if (isInitializing) return null
+
+  if (user) return Navigate({ to: '/dashboard', replace: true })
+
   const signInForm = useForm<SignInSchema>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -33,9 +41,8 @@ const SignInForm = () => {
   })
 
   const onSignInSubmit = (data: SignInSchema) => {
-    console.log('Sign In Data:', data)
+    signin(data)
   }
-
   return (
     <Card className="bg-card/30">
       <CardHeader className="flex flex-col items-center gap-4">
@@ -89,8 +96,16 @@ const SignInForm = () => {
               )}
             />
 
-            <Button className="w-full" type="submit">
-              Entrar
+            {/* SUBMIT BUTTON */}
+            <Button disabled={signInPending} type="submit" className="w-full">
+              {signInPending ? (
+                <>
+                  <LoaderIcon className="animate-spin" />
+                  Entrando...
+                </>
+              ) : (
+                'Entrar'
+              )}
             </Button>
           </form>
         </Form>

@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 const signUpSchema = z
   .object({
-    username: z
+    name: z
       .string()
       .trim()
       .min(2, {

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Cloudy, LockIcon, MailIcon, UserIcon } from 'lucide-react'
+import { Cloudy, LoaderIcon, LockIcon, MailIcon, UserIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
@@ -19,15 +19,18 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useAuthContext } from '@/context/authContext'
 
 import { type SignUpSchema, signUpSchema } from '../schemas/sign-up'
 import PasswordInput from './password-input'
 
 const SignUpForm = () => {
+  const { signup, signUpPending } = useAuthContext()
+
   const signUpForm = useForm<SignUpSchema>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      username: '',
+      name: '',
       email: '',
       password: '',
       passwordConfirmation: '',
@@ -35,8 +38,9 @@ const SignUpForm = () => {
   })
 
   const onSignUpSubmit = (data: SignUpSchema) => {
-    console.log('Sign Up Data:', data)
+    signup(data)
   }
+
   return (
     <Card className="bg-card/30">
       <CardHeader className="flex flex-col items-center gap-4">
@@ -57,7 +61,7 @@ const SignUpForm = () => {
             {/* USERNAME */}
             <FormField
               control={signUpForm.control}
-              name="username"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
@@ -128,9 +132,19 @@ const SignUpForm = () => {
               )}
             />
 
-            <Button className="w-full" type="submit">
-              Entrar
-            </Button>
+            {/* SUBMIT BUTTON */}
+            {
+              <Button type="submit" className="w-full" disabled={signUpPending}>
+                {signUpPending ? (
+                  <>
+                    <LoaderIcon className="animate-spin" />
+                    Criando conta...
+                  </>
+                ) : (
+                  'Criar conta'
+                )}
+              </Button>
+            }
           </form>
         </Form>
       </CardContent>

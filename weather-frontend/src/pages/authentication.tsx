@@ -1,8 +1,12 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useAuthContext } from '@/context/authContext'
 import SignInForm from '@/features/authentication/components/sign-in-form'
 import SignUpForm from '@/features/authentication/components/sign-up-form'
 
 const AuthenticationPage = () => {
+  const { isInitializing } = useAuthContext()
+
+  if (isInitializing) return null
   return (
     <div className="from-background via-background/50 flex min-h-screen w-full items-center justify-center bg-linear-to-b to-orange-300/35 px-4">
       <div className="flex w-full max-w-sm flex-col gap-6">
