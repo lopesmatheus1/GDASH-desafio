@@ -64,13 +64,12 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # MONGO
       MONGO_URI: mongodb://root:root@mongo:27017/admin?authSource=admin
-
-      # RABBITMQ
+      JWT_SECRET: <your_jwt_secret_key>
+      GEMINI_API_KEY: <YOUR_GEMINI_API_KEY>
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
-      
+
 volumes:
   mongo_data:
