@@ -25,7 +25,7 @@ export class AiService {
       2. Relacione com a Umidade e Chuva se houver dados.
 
       DIRETRIZES DE RESPOSTA (OUTPUT):
-      - Escreva um parágrafo curto e direto (máximo 40 palavras).
+      - Escreva um texto corrido (40 palavras).
       - Use linguagem natural, mas técnica.
       - Comece com a conclusão principal.
       - NÃO use introduções como "Condições normais:".
@@ -58,7 +58,7 @@ export class AiService {
     - "Normal": Se nenhuma das condições acima for atendida.
 
       SAIDA:
-    - Retorne apenas um texto corrido (máximo 30 palavras) dos riscos climáticos atuais.
+    - Retorne apenas um texto corrido (máximo 40 palavras) dos riscos climáticos atuais.
     - Use linguagem clara e direta.
     - Não use ** OU "" EM SUAS RESPOSTAS.
     - NÃO use introduções como "Condições normais:".
@@ -98,7 +98,7 @@ export class AiService {
     - 0 a 49 (Vermelho): Desconfortável. Fique em casa (Filmes, Estudos, Café).
 
     SAÍDA OBRIGATÓRIA:
-    Retorne APENAS UMA frase curta (máximo 20 palavras).
+    Retorne APENAS UM texto corrido (40 palavras).
     - Seja motivador e direto.
     - Não use ** OU "" EM SUAS RESPOSTAS.
     - NÃO use introduções como "Minha sugestão é:".

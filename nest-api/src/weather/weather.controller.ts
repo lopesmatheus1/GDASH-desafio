@@ -25,6 +25,11 @@ export class WeatherController {
     return this.weatherService.findAll(month, YEAR)
   }
 
+  @Get('latest')
+  async findLastLog() {
+    return this.weatherService.findLastWeather()
+  }
+
   @Get('export.csv')
   async exportCsv(@Res() res: Response) {
     const logs = await this.weatherService.findAll()

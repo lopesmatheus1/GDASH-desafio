@@ -15,6 +15,10 @@ export class WeatherService {
     return this.weatherModel.create(createWeatherDto)
   }
 
+  async findLastWeather() {
+    return this.weatherModel.findOne().sort({ createdAt: -1 }).exec()
+  }
+
   async findAll(month?: number, year?: number) {
     const query: {
       createdAt?: { $gte: Date; $lt: Date }
