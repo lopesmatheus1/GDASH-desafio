@@ -15,7 +15,7 @@ import { Reflector } from '@nestjs/core/services/reflector.service'
     HashModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '6h' },
     }),
     Reflector,
   ],
